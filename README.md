@@ -1,6 +1,6 @@
 # Klipper calibration grids
 
-Two small Python scripts that write ready-to-print G-code calibration tests
+Four small Python scripts that write ready-to-print G-code calibration tests
 for Klipper printers. No slicer involved: each script generates every move
 directly, so one file tests a whole grid of settings in a single print.
 
@@ -13,6 +13,7 @@ script.
 | `make_first_layer_grid.py` | Nozzle height (Z offset) across, first-layer flow down | `first_layer_grid.gcode` |
 | `make_ironing_grid.py` | Ironing speed across, ironing flow down | `ironing_grid.gcode` |
 | `make_pressure_advance.py` | Pressure advance, one corner pattern per value | `pressure_advance.gcode` |
+| `make_max_flow.py` | Hotend maximum volumetric flow, one band per mm³/s rate | `max_flow.gcode` |
 
 The included `.gcode` files are the output of the scripts as committed, and the
 `.png` files are top-down previews of the toolpaths.
@@ -74,6 +75,24 @@ pressure_advance_smooth_time: 0.040
 The script restores your configured value at the end of the print, so the
 test does not change the printer's live setting.
 
+## Maximum flow test
+
+![max flow](max_flow.png)
+
+One band per volumetric rate, 8 to 26 mm³/s front to back, each labelled.
+A band is four adjacent 150 mm lines printed as one continuous serpentine,
+two layers tall, so the hotend has to sustain the rate for several seconds.
+Line width and height are fixed; only the speed changes.
+
+- Good: even width end to end, both layers solid, matte surface.
+- Past the limit: the band thins, roughens or goes gappy part way along, the
+  second layer shows holes, or the extruder clicks.
+
+The highest good band is the hotend limit F. Use 0.9 F as the slicer
+ceiling: `speed = 0.9 F / (layer height x line width)`. With F = 18 mm³/s
+and a 0.28 mm layer at 0.44 mm line width that is 131 mm/s. Print it at the
+temperature you will use for parts, because the limit rises with temperature.
+
 ## Running
 
 ```
@@ -87,7 +106,7 @@ itself. Upload the file through Mainsail or Fluidd and print it.
 
 ## Adapting to your printer
 
-Both scripts start with:
+All scripts start with:
 
 ```
 M140 / M104 / M190 / M109   heat and wait
