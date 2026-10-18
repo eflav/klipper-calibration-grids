@@ -12,6 +12,7 @@ script.
 |---|---|---|
 | `make_first_layer_grid.py` | Nozzle height (Z offset) across, first-layer flow down | `first_layer_grid.gcode` |
 | `make_ironing_grid.py` | Ironing speed across, ironing flow down | `ironing_grid.gcode` |
+| `make_pressure_advance.py` | Pressure advance, one corner pattern per value | `pressure_advance.gcode` |
 
 The included `.gcode` files are the output of the scripts as committed, and the
 `.png` files are top-down previews of the toolpaths.
@@ -49,11 +50,36 @@ speed that still matches its slower neighbours.
 
 Cura equivalents: *Ironing Flow*, *Ironing Speed*, *Ironing Line Spacing*.
 
+## Pressure advance pattern
+
+![pressure advance](pressure_advance.png)
+
+One chevron per pressure advance value, 0.000 to 0.100 in 0.005 steps, each
+labelled. Every leg starts slow, accelerates to the fast speed into a 90
+degree corner, and slows again at the end, so the speed changes expose the
+pressure advance error. Lines are four layers tall so they are easy to read.
+
+- Too low: a blob at the corner and a thin stretch after the slow-to-fast change.
+- Too high: a gap or very thin corner, and a bulge where the line slows down.
+- Right: even width end to end, crisp corner.
+
+Take the lowest value with a crisp corner and set it in `printer.cfg`:
+
+```
+[extruder]
+pressure_advance: 0.035
+pressure_advance_smooth_time: 0.040
+```
+
+The script restores your configured value at the end of the print, so the
+test does not change the printer's live setting.
+
 ## Running
 
 ```
 python make_first_layer_grid.py
 python make_ironing_grid.py
+python make_pressure_advance.py
 ```
 
 Python 3, standard library only. Each script writes its `.gcode` next to
