@@ -103,7 +103,9 @@ python make_max_flow.py 28 30 32 34 36 38 40 42 44 46 -o max_flow_v3.gcode
 **Clean the bed first.** On a greasy PEI sheet the fast bands lift and curl
 part way along and look exactly like a hotend that has run out of flow. On
 an SV07 at 225 °C the 22 to 26 bands curled on a dirty bed, then every band
-up to 32 printed solid after a wash.
+up to 32 printed solid after a wash. A third run starting at 28 had only
+the 28 band stick, so 30 to 32 was the margin and 28 the reliable limit.
+When a rate passes one run and fails the next, it is the limit.
 
 - Good: even width end to end, both layers solid, matte surface.
 - Past the limit: the band thins, roughens or goes gappy part way along, the
