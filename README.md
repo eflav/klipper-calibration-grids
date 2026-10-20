@@ -85,6 +85,12 @@ A band is four adjacent 150 mm lines printed as one continuous serpentine,
 two layers tall, so the hotend has to sustain the rate for several seconds.
 Line width and height are fixed; only the speed changes.
 
+Each band sits on two slow base layers (25 mm/s then 60 mm/s, one line
+wider each side), so the fast lines go onto plastic rather than the bed and
+adhesion is not part of the measurement. Without the base, a band laid
+straight on the sheet at 150 mm/s or more lifts and curls whether or not
+the hotend kept up, which is indistinguishable from a flow failure.
+
 Three ranges are included, so you can step up if every band in the first
 one is good:
 
@@ -93,6 +99,7 @@ one is good:
 | `max_flow.gcode` | 8 to 26 | 48 to 155 mm/s |
 | `max_flow_v2.gcode` | 14 to 32 | 83 to 190 mm/s |
 | `max_flow_v3.gcode` | 28 to 46 | 167 to 274 mm/s |
+| `max_flow_v4.gcode` | 24 to 42 | 143 to 250 mm/s |
 
 Any other range without editing the script:
 
@@ -100,12 +107,10 @@ Any other range without editing the script:
 python make_max_flow.py 28 30 32 34 36 38 40 42 44 46 -o max_flow_v3.gcode
 ```
 
-**Clean the bed first.** On a greasy PEI sheet the fast bands lift and curl
-part way along and look exactly like a hotend that has run out of flow. On
-an SV07 at 225 °C the 22 to 26 bands curled on a dirty bed, then every band
-up to 32 printed solid after a wash. A third run starting at 28 had only
-the 28 band stick, so 30 to 32 was the margin and 28 the reliable limit.
-When a rate passes one run and fails the next, it is the limit.
+**Clean the bed anyway.** The base layers still need to stick. Before the
+base layers existed, an SV07 at 225 °C gave three different answers in
+three runs (22, 32 and 28 mm³/s) purely from how well the fast first layer
+bonded. The base layers were added to stop that.
 
 - Good: even width end to end, both layers solid, matte surface.
 - Past the limit: the band thins, roughens or goes gappy part way along, the

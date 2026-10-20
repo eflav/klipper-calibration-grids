@@ -67,11 +67,13 @@ def write_png(path, px, size):
     def chunk(tag, data):
         return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
 
-    with open(path, "wb") as f:
+    tmp = path + ".tmp"      # write then replace, so a viewer holding the old file open does not block us
+    with open(tmp, "wb") as f:
         f.write(b"\x89PNG\r\n\x1a\n")
         f.write(chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)))
         f.write(chunk(b"IDAT", zlib.compress(raw, 9)))
         f.write(chunk(b"IEND", b""))
+    os.replace(tmp, path)
 
 
 if __name__ == "__main__":
