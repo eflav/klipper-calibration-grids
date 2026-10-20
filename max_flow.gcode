@@ -13,7 +13,7 @@ G90
 M106 S0
 M204 S5000
 RESPOND TYPE=echo MSG="Flow test: bands front to back 8 10 12 14 16 18 20 22 24 26 mm3/s at 225 C"
-RESPOND TYPE=echo MSG="Flow test: limit F = highest band that is still even and solid; slicer ceiling = 0.9 F"
+RESPOND TYPE=echo MSG="Flow test: limit F = highest band that is still even and solid. Slicer ceiling is 0.9 F"
 ; layer 1 z=0.28
 ; labels
 G1 E-0.800 F2700

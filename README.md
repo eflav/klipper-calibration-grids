@@ -14,6 +14,7 @@ script.
 | `make_ironing_grid.py` | Ironing speed across, ironing flow down | `ironing_grid.gcode` |
 | `make_pressure_advance.py` | Pressure advance, one corner pattern per value | `pressure_advance.gcode` |
 | `make_max_flow.py` | Hotend maximum volumetric flow, one band per mm³/s rate | `max_flow.gcode` |
+| `render_preview.py` | Draws the `.png` previews from any of the `.gcode` files | `*.png` |
 
 The included `.gcode` files are the output of the scripts as committed, and the
 `.png` files are top-down previews of the toolpaths.
@@ -84,6 +85,26 @@ A band is four adjacent 150 mm lines printed as one continuous serpentine,
 two layers tall, so the hotend has to sustain the rate for several seconds.
 Line width and height are fixed; only the speed changes.
 
+Three ranges are included, so you can step up if every band in the first
+one is good:
+
+| File | Rates (mm³/s) | Speeds at 0.60 x 0.28 mm |
+|---|---|---|
+| `max_flow.gcode` | 8 to 26 | 48 to 155 mm/s |
+| `max_flow_v2.gcode` | 14 to 32 | 83 to 190 mm/s |
+| `max_flow_v3.gcode` | 28 to 46 | 167 to 274 mm/s |
+
+Any other range without editing the script:
+
+```
+python make_max_flow.py 28 30 32 34 36 38 40 42 44 46 -o max_flow_v3.gcode
+```
+
+**Clean the bed first.** On a greasy PEI sheet the fast bands lift and curl
+part way along and look exactly like a hotend that has run out of flow. On
+an SV07 at 225 °C the 22 to 26 bands curled on a dirty bed, then every band
+up to 32 printed solid after a wash.
+
 - Good: even width end to end, both layers solid, matte surface.
 - Past the limit: the band thins, roughens or goes gappy part way along, the
   second layer shows holes, or the extruder clicks.
@@ -99,6 +120,8 @@ temperature you will use for parts, because the limit rises with temperature.
 python make_first_layer_grid.py
 python make_ironing_grid.py
 python make_pressure_advance.py
+python make_max_flow.py
+python render_preview.py max_flow.gcode      # optional top-down preview
 ```
 
 Python 3, standard library only. Each script writes its `.gcode` next to

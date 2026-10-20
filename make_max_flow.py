@@ -18,13 +18,23 @@ Use 0.9 x F as the working ceiling and set slicer speeds from it:
 
 Edit RATES, TEMP or any constant below, then run:
     python make_max_flow.py
-It writes max_flow.gcode next to this script.
+It writes max_flow.gcode next to this script. To test a different range
+without editing, pass the rates and an output name:
+    python make_max_flow.py 28 30 32 34 36 38 40 42 44 46 -o max_flow_v3.gcode
 """
 import math
 import os
 
 # ---------------------------------------------------------------- settings
 RATES = [8, 10, 12, 14, 16, 18, 20, 22, 24, 26]   # mm3/s, one band each, front to back
+# Override from the command line: python make_max_flow.py 28 30 32 34 36 38 40 42 44 46 -o max_flow_v3.gcode
+OUT = "max_flow.gcode"
+import sys
+_args = sys.argv[1:]
+if "-o" in _args:
+    OUT = _args[_args.index("-o") + 1]; del _args[_args.index("-o"):_args.index("-o") + 2]
+if _args:
+    RATES = [int(a) for a in _args]
 TEMP = 225                    # nozzle, the temperature you will print parts at
 BED_TEMP = 60
 LAYER_H = 0.28
@@ -163,7 +173,7 @@ emit("G90")
 emit("M106 S0")
 emit("M204 S%d" % ACCEL)
 emit('RESPOND TYPE=echo MSG="Flow test: bands front to back %s mm3/s at %d C"' % (" ".join(str(r) for r in RATES), TEMP))
-emit('RESPOND TYPE=echo MSG="Flow test: limit F = highest band that is still even and solid; slicer ceiling = 0.9 F"')
+emit('RESPOND TYPE=echo MSG="Flow test: limit F = highest band that is still even and solid. Slicer ceiling is 0.9 F"')
 
 ys = [GRID_Y0 + i * PITCH for i in range(len(RATES))]
 label_x = BAND_X0 - 4 - text_width("26")
@@ -188,7 +198,7 @@ for layer in range(LAYERS):
 emit("G1 E-%.3f F%d" % (RETRACT, RETRACT_SPEED * 60))
 emit("END_PRINT")
 
-path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "max_flow.gcode")
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)), OUT)
 with open(path, "w") as f:
     f.write("\n".join(out) + "\n")
 print("wrote", path, "(%d lines, about %d min of motion)" % (len(out), time_s / 60))
