@@ -13,7 +13,7 @@ script.
 | `make_first_layer_grid.py` | Nozzle height (Z offset) across, first-layer flow down | `first_layer_grid.gcode` |
 | `make_ironing_grid.py` | Ironing speed across, ironing flow down | `ironing_grid.gcode` |
 | `make_pressure_advance.py` | Pressure advance, one corner pattern per value | `pressure_advance.gcode` |
-| `make_max_flow.py` | Hotend maximum volumetric flow, one band per mm³/s rate | `max_flow.gcode` |
+| `make_max_flow.py` | Hotend maximum volumetric flow, one band per mm³/s rate | `max_flow_v4.gcode` |
 | `render_preview.py` | Draws the `.png` previews from any of the `.gcode` files | `*.png` |
 
 The included `.gcode` files are the output of the scripts as committed, and the
@@ -78,9 +78,9 @@ test does not change the printer's live setting.
 
 ## Maximum flow test
 
-![max flow](max_flow.png)
+![max flow](max_flow_v4.png)
 
-One band per volumetric rate, 8 to 26 mm³/s front to back, each labelled.
+One band per volumetric rate, front to back, each labelled.
 A band is four adjacent 150 mm lines printed as one continuous serpentine,
 two layers tall, so the hotend has to sustain the rate for several seconds.
 Line width and height are fixed; only the speed changes.
@@ -91,21 +91,17 @@ adhesion is not part of the measurement. Without the base, a band laid
 straight on the sheet at 150 mm/s or more lifts and curls whether or not
 the hotend kept up, which is indistinguishable from a flow failure.
 
-Three ranges are included, so you can step up if every band in the first
-one is good:
-
-| File | Rates (mm³/s) | Speeds at 0.60 x 0.28 mm |
-|---|---|---|
-| `max_flow.gcode` | 8 to 26 | 48 to 155 mm/s |
-| `max_flow_v2.gcode` | 14 to 32 | 83 to 190 mm/s |
-| `max_flow_v3.gcode` | 28 to 46 | 167 to 274 mm/s |
-| `max_flow_v4.gcode` | 24 to 42 | 143 to 250 mm/s |
-
-Any other range without editing the script:
+The script's default range is 8 to 26 mm³/s (48 to 155 mm/s at the
+0.60 x 0.28 mm test line), a sensible start for a standard hotend. The
+included `max_flow_v4.gcode` covers 24 to 42 mm³/s (143 to 250 mm/s) for a
+high-flow hotend, made with:
 
 ```
-python make_max_flow.py 28 30 32 34 36 38 40 42 44 46 -o max_flow_v3.gcode
+python make_max_flow.py 24 26 28 30 32 34 36 38 40 42 -o max_flow_v4.gcode
 ```
+
+Pass any rates you like the same way. If every band in a run is good, step
+the range up and run it again.
 
 **Clean the bed anyway.** The base layers still need to stick. Before the
 base layers existed, an SV07 at 225 °C gave three different answers in
